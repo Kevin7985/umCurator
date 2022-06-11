@@ -19,6 +19,9 @@ const registerCheck = async (user) => {
     return 'emailInput';
   }
 
+  if (!user.subject_code || user.subject_code.length === 0) {
+    return 'sujectSelect';
+  }
   return 'SUCCESS';
 };
 
