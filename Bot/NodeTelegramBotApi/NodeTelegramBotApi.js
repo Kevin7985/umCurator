@@ -19,10 +19,29 @@ class NodeTelegramBotApi {
 
   async sendMessage(chat_id, text, options = {parse_mode: 'HTML'}) {
     if (!options.parse_mode) {
-      options.parse_mode = 'markdown';
+      options.parse_mode = 'HTML';
     }
 
     return (await this.bot.sendMessage(chat_id, text, options));
+  }
+
+  async editMessage(chat_id, message_id, text, options = {parse_mode: 'HTML'}) {
+    if (!options) {
+      options = {
+        chat_id: chat_id,
+        message_id: message_id
+      };
+    }
+    else {
+      options.chat_id = chat_id;
+      options.message_id = message_id;
+    }
+
+    if (!options.parse_mode) {
+      options.parse_mode = 'HTML';
+    }
+
+    return (await this.bot.editMessageText(text, options));
   }
 
   async listen(callback) {
