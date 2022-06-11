@@ -23,7 +23,7 @@ class BotMessage {
     this.#meta.message = message;
   }
 
-  getype() {
+  getType() {
     return this.#meta.type;
   }
 
