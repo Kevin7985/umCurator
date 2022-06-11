@@ -3,6 +3,8 @@ const TelegramBot = require('node-telegram-bot-api');
 class NodeTelegramBotApi {
   static instance = null;
 
+  Keyboard = require('./dependences/keyboards/Keyboard');
+
   constructor(token) {
     if (NodeTelegramBotApi.instance) {
       return NodeTelegramBotApi.instance;
