@@ -7,8 +7,8 @@ const parse = (type, message) => {
   }
 
   let user = {
-    id: messageData.from.id,
-    username: (messageData.from.username || messageDatas.from.first_name)
+    id: message.from.id,
+    username: (message.from.username || message.from.first_name)
   };
 
   let chat = {
