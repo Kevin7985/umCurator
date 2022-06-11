@@ -14,6 +14,14 @@ class NodeTelegramBotApi {
     this.MessageParser = require('./lib/MessageParser');
   }
 
+  async sendMessage(chat_id, text, options = {parse_mode: 'HTML'}) {
+    if (!options.parse_mode) {
+      options.parse_mode = 'HTML';
+    }
+
+    return (await this.bot.sendMessage(chat_id, text, options));
+  }
+
   async listen(callback) {
     this.bot.on('text', message => {
       let msg = this.MessageParser.parse('text', message);
