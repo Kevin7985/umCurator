@@ -11,6 +11,14 @@ class NodeTelegramBotApi {
     NodeTelegramBotApi.instance = this;
 
     this.bot = new TelegramBot(token, {polling: true});
+    this.MessageParser = require('./lib/MessageParser');
+  }
+
+  async listen(callback) {
+    this.bot.on('text', message => {
+      let msg = this.MessageParser.parse('text', message);
+      return callback(msg);
+    });
   }
 }
 
