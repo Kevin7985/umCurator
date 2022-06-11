@@ -30,6 +30,12 @@ class NodeTelegramBotApi {
       let msg = this.MessageParser.parse('text', message);
       return callback(msg);
     });
+
+    this.bot.on('callback_query', async message => {
+      let msg = this.MessageParser.parse('callback', message);
+      this.bot.answerCallbackQuery(msg.getCallback('id'));
+      return callback(msg);
+    });
   }
 }
 

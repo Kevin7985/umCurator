@@ -13,14 +13,22 @@ class BotMessage {
       id: -1,
       date: -1,
       text: undefined
+    },
+    callback: {
+      id: -1,
+      data: undefined
     }
   };
 
-  constructor(type, user, chat, message) {
+  constructor(type, user, chat, message, callback = undefined) {
     this.#meta.type = type;
     this.#meta.user = user;
     this.#meta.chat = chat;
     this.#meta.message = message;
+
+    if (type === 'callback') {
+      this.#meta.callback = callback;
+    }
   }
 
   getType() {
@@ -61,6 +69,22 @@ class BotMessage {
     }
 
     return this.#meta.message[param];
+  }
+
+  getCallback(param = null) {
+    if (this.#meta.type !== 'callback') {
+      throw 'this message does not support callback';
+    }
+
+    if (!param) {
+      return this.#meta.callback;
+    }
+
+    if (!this.#meta.callback[param]) {
+      throw 'no such param for object "callback"';
+    }
+
+    return this.#meta.callback[param];
   }
 }
 
