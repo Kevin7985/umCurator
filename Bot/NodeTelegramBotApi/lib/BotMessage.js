@@ -27,7 +27,7 @@ class BotMessage {
     return this.#meta.type;
   }
 
-  getChat(oaram = null) {
+  getChat(param = null) {
     if (!param) {
       return this.#meta.chat;
     }
