@@ -4,6 +4,7 @@ class NodeTelegramBotApi {
   static instance = null;
 
   Keyboard = require('./dependences/keyboards/Keyboard');
+  Emoji = new (require('./dependences/emoji/emoji')) ();
 
   constructor(token) {
     if (NodeTelegramBotApi.instance) {
@@ -18,7 +19,7 @@ class NodeTelegramBotApi {
 
   async sendMessage(chat_id, text, options = {parse_mode: 'HTML'}) {
     if (!options.parse_mode) {
-      options.parse_mode = 'HTML';
+      options.parse_mode = 'markdown';
     }
 
     return (await this.bot.sendMessage(chat_id, text, options));
