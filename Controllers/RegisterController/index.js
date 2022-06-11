@@ -10,6 +10,7 @@ const db = new (require('../../DAL/DAL')) ();
 
 const fioInputStage = require('./stages/fioInput');
 const emailInputStage = require('./stages/emailInput');
+const subjectsInputStage = require('./stages/subjectsInput');
 
 class Index extends Controller {
   constructor() {
@@ -53,13 +54,25 @@ class Index extends Controller {
 
       await emailInputStage.emailSave(msg.getUser('id'), msg.getMessage('text'));
 
-      await Bot.sendMessage(msg.getChat('id'), '<b>Почта успешно сохранена!</b>\n\nПока что на этом всё, но регистрация на этом не завершена!');
+      let keyboard = await subjectsInputStage.keyboard();
+      console.log(keyboard);
+
+      await Bot.sendMessage(msg.getChat('id'), '<b>Почта успешно сохранена!</b>\n\nВыбери предмет, на котором работаешь:', keyboard);
 
       let userLocal = UserRegistry.getUser(msg.getUser('id'));
       userLocal.setState('register', 'stages', 'subjectSelect');
     }
     else if (data.payload[0] === 'subjectSelect') {
-      console.log(msg);
+      if (msg.getType() !== 'callback') {
+        await Bot.sendMessage(msg.getChat('id'), 'При выборе предмета поддерживаются только нажатия на кнопку!');
+        return;
+      }
+
+      await subjectsInputStage.subjectSave(msg.getUser('id'), data.payload[1]);
+
+      await Bot.editMessage(msg.getChat('id'), msg.getMessage('id'), 'Предмет уже выбран');
+
+      await Bot.sendMessage(msg.getChat('id'), '<b>Предмет успешно сохранён!</b>\n\nНа этом мы пока закончим, но это ещё не конец регистрации :)');
     }
   }
 }

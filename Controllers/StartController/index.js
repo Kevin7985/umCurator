@@ -8,6 +8,7 @@ const MainRouter = new (require('../../lib/MainRouter')) ();
 
 const db = new (require('../../DAL/DAL')) ();
 const registerCheck = require('./registerCheck');
+const subjectSelectStage_register = require('../RegisterController/stages/subjectsInput');
 
 class Index extends Controller {
   constructor() {
@@ -33,6 +34,12 @@ class Index extends Controller {
         }
         else if (checkReg === 'emailInput') {
           message += 'Напиши свою почту, которую ты указал(-а) при регистрации на сайте:';
+        }
+        else if (checkReg === 'sujectSelect') {
+          message += 'Выбери предмет, на котором работаешь:';
+          userLocal.setState('register', 'stages', checkReg);
+          await Bot.sendMessage(msg.getChat('id'), message, await subjectSelectStage_register.keyboard());
+          return;
         }
 
         userLocal.setState('register', 'stages', checkReg);
