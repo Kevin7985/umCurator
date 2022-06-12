@@ -2,6 +2,55 @@ const botFactory = new (require('../../../Bot/BotFactory')) (process.env.BOT_LIB
 const Bot = botFactory.init(process.env.TELEGRAM_TOKEN);
 
 const db = new (require('../../../DAL/DAL')) ();
+const UserRegistry = new (require('../../../lib/UserRegistry')) ();
+
+const rolesSelect = require('./rolesInput');
+
+const subjects = {
+  'rus': `Русский язык ${Bot.Emoji.get('ru')}`,
+  'math': `Математика ${Bot.Emoji.get('1234')}`,
+  'social': `Обществознание ${Bot.Emoji.get('man-woman-boy')}`,
+  'hist': `История ${Bot.Emoji.get('crossed_swords')}`,
+  'lit': `Литература ${Bot.Emoji.get('books')}`,
+  'eng': `Английский язык ${Bot.Emoji.get('flag-gb')}`,
+  'chem': `Химия ${Bot.Emoji.get('test_tube')}`,
+  'bio': `Биология ${Bot.Emoji.get('microscope')}`,
+  'phys': `Физика ${Bot.Emoji.get('atom_symbol')}`,
+  'inf': `Информатика ${Bot.Emoji.get('computer')}`,
+  'geo': `География ${Bot.Emoji.get('earth_africa')}`,
+  'nem': `Немецкий язык ${Bot.Emoji.get('de')}`
+
+};
+
+const init = async (data, roles) => {
+  let msg = data.message;
+  let userLocal = UserRegistry.getUser(msg.getUser('id'));
+
+  if (data.payload[1] && data.payload[1] === 'restart') {
+    await Bot.sendMessage(msg.getChat('id'), 'Похоже, в прошлый раз мы не закончили регистрацию!\n\nВыбери предмет, на котором работаешь:', await keyboard());
+
+    userLocal.setState('register', 'stages', 'subjectSelect');
+  }
+  else {
+    if (msg.getType() !== 'callback') {
+      await Bot.sendMessage(msg.getChat('id'), 'При выборе предмета поддерживаются только нажатия на кнопку!');
+      return;
+    }
+
+    if (!data.payload[1]) {
+      await Bot.sendMessage(msg.getChat('id'), 'Произошла неизвестная ошибка! Повторите выбор ещё раз');
+      return;
+    }
+
+    await subjectSave(msg.getUser('id'), data.payload[1]);
+
+    await Bot.editMessage(msg.getChat('id'), msg.getMessage('id'), `Выбран предмет: <b>${subjects[data.payload[1]]}</b>`);
+
+    let keyboard = await rolesSelect.mainKeyboard(roles);
+    await Bot.sendMessage(msg.getChat('id'), '<b>Предмет успешно сохранён!</b>\n\nТеперь выбери должности, на которых ты работаешь:', keyboard);
+    userLocal.setState('register', 'stages', 'rolesSelect');
+  }
+};
 
 const keyboard = async () => {
   let Keyboard = new Bot.Keyboard('inline_keyboard');
@@ -28,6 +77,5 @@ const subjectSave = async (telegram_id, input) => {
 }
 
 module.exports = {
-  keyboard,
-  subjectSave
+  init
 };
